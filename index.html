@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aashirvad Jewels — 250+ Fine Jewellery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #f5f0e8;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4, h5, .logo, .nav-link, .btn, .section-title, .product-title, .testimonial-text {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+
+    /* ═══ CUSTOM CURSOR ═══ */
+    .cursor-dot {
+      position: fixed; width: 8px; height: 8px; background: #c9a96e;
+      border-radius: 50%; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed; width: 40px; height: 40px;
+      border: 1px solid rgba(201,169,110,0.4);
+      border-radius: 50%; pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s, border-color 0.3s;
+    }
+    .cursor-ring.hover {
+      width: 64px; height: 64px;
+      border-color: #c9a96e;
+      background: rgba(201,169,110,0.08);
+    }
+    a:hover ~ .cursor-ring, button:hover ~ .cursor-ring,
+    .collection-item:hover ~ .cursor-ring,
+    .product-card:hover ~ .cursor-ring { width: 64px; height: 64px; border-color: #c9a96e; }
+
+    /* ═══ SCROLL PROGRESS ═══ */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; width: 0; height: 2px;
+      background: linear-gradient(90deg, #c9a96e, #dbb87e);
+      z-index: 200; transition: width 0.05s linear;
+    }
+
+    /* ═══ NAVIGATION ═══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 28px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(10,10,10,0.7);
+      backdrop-filter: blur(20px) saturate(1.3);
+      border-bottom: 1px solid rgba(245,240,232,0.04);
+      transition: padding 0.5s ease, background 0.5s ease;
+    }
+    nav.shrink { padding: 14px 40px; background: rgba(10,10,10,0.92); }
+    .logo {
+      font-size: 19.5px; font-weight: 600; letter-spacing: 6px;
+      text-transform: uppercase; color: #f5f0e8;
+      position: relative; overflow: hidden;
+    }
+    .logo::after {
+      content: ''; position: absolute; bottom: 0; left: -100%; width: 100%; height: 1px;
+      background: #c9a96e; transition: left 0.6s ease;
+    }
+    .logo:hover::after { left: 0; }
+    .logo span { color: #c9a96e; }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(245,240,232,0.6);
+      position: relative; padding: 4px 0;
+      transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1px; background: #c9a96e;
+      transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .nav-links a:hover { color: #f5f0e8; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-icons { display: flex; gap: 20px; }
+    .nav-icons svg {
+      width: 20px; height: 20px; stroke: #f5f0e8; fill: none; stroke-width: 1.5;
+      cursor: pointer; transition: all 0.3s;
+    }
+    .nav-icons svg:hover { stroke: #c9a96e; transform: scale(1.15) rotate(-4deg); }
+    .nav-icons .bag-wrap { position: relative; }
+    .bag-count {
+      position: absolute; top: -6px; right: -8px; width: 16px; height: 16px;
+      background: #c9a96e; color: #0a0a0a; font-size: 9px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; font-family: 'Inter', sans-serif;
+      transform: scale(0); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .bag-count.show { transform: scale(1); }
+    .bag-count.bump { animation: bumpBag 0.4s ease; }
+    @keyframes bumpBag { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+
+    /* ═══ HERO ═══ */
+    .hero {
+      height: 100vh; min-height: 700px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: -40px;
+      background: url('awd1.png') center / cover no-repeat;
+      filter: brightness(0.35) saturate(1.15);
+      transform: scale(1.1);
+      will-change: transform;
+    }
+    .hero-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(10,10,10,0.5) 0%, transparent 40%, transparent 60%, rgba(10,10,10,0.8) 100%);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.6) 100%);
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 860px; padding: 0 20px; }
+    .hero-tag {
+      font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+      color: rgba(201,169,110,0.7); margin-bottom: 28px;
+      opacity: 0; animation: heroFadeIn 0.8s 0.2s forwards;
+    }
+    .hero h1 {
+      font-size: clamp(44px, 7vw, 88px); font-weight: 600; line-height: 1.08;
+      margin-bottom: 20px; color: #f5f0e8;
+    }
+    .hero h1 .line {
+      display: block; overflow: hidden;
+    }
+    .hero h1 .line span {
+      display: block; opacity: 0; transform: translateY(100%);
+      animation: heroReveal 0.9s 0.4s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .hero h1 .line:nth-child(2) span { animation-delay: 0.6s; }
+    .hero h1 em { font-style: italic; color: #c9a96e; position: relative; }
+    .hero h1 em::after {
+      content: ''; position: absolute; bottom: 4px; left: 0; width: 100%; height: 2px;
+      background: #c9a96e; transform: scaleX(0); transform-origin: left;
+      animation: lineExpand 0.8s 0.9s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .hero p {
+      font-size: 15px; font-weight: 300; color: rgba(245,240,232,0.6);
+      margin-bottom: 44px; max-width: 520px; margin-left: auto; margin-right: auto;
+      opacity: 0; transform: translateY(20px);
+      animation: heroFadeIn 0.8s 0.8s forwards;
+    }
+    .btn {
+      display: inline-block; padding: 16px 48px;
+      font-size: 12px; font-weight: 600; letter-spacing: 3px;
+      text-transform: uppercase; border: 1px solid #c9a96e;
+      color: #f5f0e8; background: transparent;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: color 0.4s;
+      isolation: isolate;
+    }
+    .btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: #c9a96e; transform: scaleX(0); transform-origin: right;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: -1;
+    }
+    .btn:hover::before { transform: scaleX(1); transform-origin: left; }
+    .btn:hover { color: #0a0a0a; }
+    .btn-primary { background: #c9a96e; color: #0a0a0a; border-color: #c9a96e; }
+    .btn-primary::before { background: transparent; }
+    .btn-primary:hover { background: #d4b47a; color: #0a0a0a; }
+
+    .hero-btn {
+      opacity: 0; transform: translateY(20px);
+      animation: heroFadeIn 0.8s 1.0s forwards;
+    }
+
+    @keyframes heroFadeIn { to { opacity: 1; transform: translateY(0); } }
+    @keyframes heroReveal { to { opacity: 1; transform: translateY(0); } }
+    @keyframes lineExpand { to { transform: scaleX(1); } }
+
+    .scroll-indicator {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: rgba(245,240,232,0.3); font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      opacity: 0; animation: heroFadeIn 1s 1.5s forwards;
+    }
+    .scroll-indicator .mouse {
+      width: 22px; height: 34px; border: 1.5px solid rgba(245,240,232,0.2);
+      border-radius: 12px; position: relative;
+    }
+    .scroll-indicator .mouse .wheel {
+      width: 2px; height: 8px; background: #c9a96e; border-radius: 2px;
+      position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+      animation: wheelBounce 1.8s ease-in-out infinite;
+    }
+    @keyframes wheelBounce { 0%,100%{top:6px;opacity:1} 50%{top:14px;opacity:0.3} }
+
+    /* ═══ SPARKLE OVERLAY ═══ */
+    .sparkle-layer {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none; overflow: hidden;
+    }
+    .sparkle {
+      position: absolute; width: 3px; height: 3px; background: #c9a96e;
+      border-radius: 50%; opacity: 0;
+      animation: sparkleFloat 6s ease-in-out infinite;
+    }
+    @keyframes sparkleFloat {
+      0% { opacity: 0; transform: translateY(100vh) scale(0); }
+      20% { opacity: 0.6; }
+      80% { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+    }
+
+    /* ═══ SECTION BASE ═══ */
+    section { padding: 120px 0; position: relative; z-index: 2; }
+    .section-title {
+      font-size: clamp(32px, 4vw, 44px); font-weight: 600; text-align: center; margin-bottom: 12px;
+    }
+    .section-subtitle {
+      text-align: center; font-size: 14px; color: rgba(245,240,232,0.45);
+      font-weight: 300; margin-bottom: 60px; letter-spacing: 1px;
+    }
+    .section-subtitle span { color: #c9a96e; }
+
+    /* ═══ REVEAL ANIMATIONS ═══ */
+    .reveal { opacity: 0; transform: translateY(50px); transition: none; }
+    .reveal.visible { animation: revealSlide 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .reveal-left { opacity: 0; transform: translateX(-60px); }
+    .reveal-left.visible { animation: revealLeft 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .reveal-right { opacity: 0; transform: translateX(60px); }
+    .reveal-right.visible { animation: revealRight 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .reveal-scale { opacity: 0; transform: scale(0.92); }
+    .reveal-scale.visible { animation: revealScale 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+    @keyframes revealSlide { to { opacity: 1; transform: translateY(0); } }
+    @keyframes revealLeft { to { opacity: 1; transform: translateX(0); } }
+    @keyframes revealRight { to { opacity: 1; transform: translateX(0); } }
+    @keyframes revealScale { to { opacity: 1; transform: scale(1); } }
+
+    .stagger > * { opacity: 0; transform: translateY(40px); }
+    .stagger.visible > * { animation: staggerIn 0.7s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .stagger.visible > *:nth-child(1) { animation-delay: 0s; }
+    .stagger.visible > *:nth-child(2) { animation-delay: 0.12s; }
+    .stagger.visible > *:nth-child(3) { animation-delay: 0.24s; }
+    @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
+
+    /* ═══ STATS ═══ */
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: rgba(245,240,232,0.04);
+      position: relative; z-index: 2;
+    }
+    .stat-card {
+      background: #0a0a0a; padding: 70px 30px; text-align: center;
+      position: relative; overflow: hidden;
+      cursor: default;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(201,169,110,0.04) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 60px; font-weight: 600; color: #c9a96e; line-height: 1;
+      position: relative;
+    }
+    .stat-number .plus { font-size: 30px; vertical-align: super; }
+    .stat-label {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      margin-top: 14px; color: rgba(245,240,232,0.45);
+    }
+
+    /* ═══ COLLECTION GRID ═══ */
+    .collection-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      position: relative; z-index: 2;
+    }
+    .collection-item {
+      position: relative; overflow: hidden; aspect-ratio: 3/4; cursor: pointer;
+      perspective: 1000px;
+    }
+    .collection-item .img-wrap {
+      width: 100%; height: 100%; overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .collection-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.8s;
+    }
+    .collection-item:hover .img-wrap { transform: scale(1.03); }
+    .collection-item:hover img { transform: scale(1.08); filter: brightness(0.5) saturate(1.1); }
+    .shine {
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 70%);
+      opacity: 0; transition: opacity 0.5s;
+    }
+    .collection-item:hover .shine { opacity: 1; }
+    .collection-item .overlay {
+      position: absolute; inset: 0; z-index: 3;
+      background: linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.92) 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 36px;
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .collection-item:hover .overlay {
+      opacity: 1; transform: translateY(0);
+    }
+    .collection-item .overlay h3 {
+      font-size: 24px; font-weight: 600; margin-bottom: 4px;
+      transform: translateY(10px); opacity: 0;
+      transition: all 0.4s 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .collection-item .overlay p {
+      font-size: 12px; color: rgba(245,240,232,0.5); letter-spacing: 1px;
+      transform: translateY(10px); opacity: 0;
+      transition: all 0.4s 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .collection-item:hover .overlay h3,
+    .collection-item:hover .overlay p {
+      transform: translateY(0); opacity: 1;
+    }
+
+    /* ═══ FEATURED PRODUCTS ═══ */
+    .featured-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 50px;
+    }
+    .featured-header .section-title { margin-bottom: 0; text-align: left; }
+    .featured-header p { color: rgba(245,240,232,0.45); font-size: 14px; }
+    .product-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      position: relative; z-index: 2;
+    }
+    .product-card {
+      position: relative; overflow: hidden; cursor: pointer;
+      perspective: 1000px;
+    }
+    .product-card .img-wrap {
+      overflow: hidden; position: relative;
+    }
+    .product-card img {
+      width: 100%; aspect-ratio: 1/1; object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .product-card:hover img { transform: scale(1.06); }
+    .product-card .quick-view {
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(60px);
+      padding: 10px 24px; background: rgba(10,10,10,0.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(245,240,232,0.1);
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: #f5f0e8; opacity: 0; z-index: 3;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      white-space: nowrap;
+    }
+    .product-card:hover .quick-view {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+    .product-card .quick-view:hover {
+      background: #c9a96e; color: #0a0a0a; border-color: #c9a96e;
+    }
+    .product-info {
+      padding: 22px 0 30px;
+      transform: translateY(0);
+      transition: transform 0.4s;
+    }
+    .product-card:hover .product-info { transform: translateY(-4px); }
+    .product-category {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+    }
+    .product-title { font-size: 19px; font-weight: 500; margin: 4px 0; }
+    .product-price {
+      font-size: 14px; color: #c9a96e; font-weight: 500;
+      display: inline-block; position: relative;
+    }
+    .product-price::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px;
+      background: #c9a96e; transition: width 0.4s;
+    }
+    .product-card:hover .product-price::after { width: 100%; }
+
+    /* ═══ MADE-TO-ORDER ═══ */
+    .mto-section {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a150e 100%);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px; align-items: center;
+      position: relative; z-index: 2;
+    }
+    .mto-image-wrap {
+      height: 520px; overflow: hidden; position: relative;
+    }
+    .mto-image-wrap .mto-bg {
+      height: 100%; width: 100%;
+      background: url('awd5.png') center / cover no-repeat;
+      filter: brightness(0.65) saturate(1.05);
+      transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform;
+    }
+    .mto-image-wrap:hover .mto-bg { transform: scale(1.05); }
+    .mto-image-wrap .mto-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(10,10,10,0.6) 0%, transparent 50%);
+    }
+    .mto-content {
+      padding: 80px 70px;
+    }
+    .mto-content h2 {
+      font-size: 40px; font-weight: 600; margin-bottom: 20px; line-height: 1.2;
+    }
+    .mto-content h2 .line { display: block; overflow: hidden; }
+    .mto-content h2 .line span {
+      display: block; opacity: 0; transform: translateY(100%);
+    }
+    .mto-content.visible h2 .line span {
+      animation: heroReveal 0.8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .mto-content.visible h2 .line:nth-child(2) span { animation-delay: 0.15s; }
+    .mto-content p {
+      font-size: 14px; color: rgba(245,240,232,0.55); margin-bottom: 30px; line-height: 1.9;
+      opacity: 0; transform: translateY(20px);
+    }
+    .mto-content.visible p {
+      animation: heroFadeIn 0.8s 0.3s forwards;
+    }
+    .mto-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+    .mto-tag {
+      padding: 10px 22px; border: 1px solid rgba(201,169,110,0.25);
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #c9a96e;
+      opacity: 0; transform: translateY(15px);
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .mto-tag:hover {
+      background: rgba(201,169,110,0.1); border-color: rgba(201,169,110,0.5);
+      transform: translateY(-2px);
+    }
+    .mto-content.visible .mto-tag {
+      animation: tagFadeIn 0.5s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .mto-content.visible .mto-tag:nth-child(1) { animation-delay: 0.4s; }
+    .mto-content.visible .mto-tag:nth-child(2) { animation-delay: 0.5s; }
+    .mto-content.visible .mto-tag:nth-child(3) { animation-delay: 0.6s; }
+    .mto-content.visible .mto-tag:nth-child(4) { animation-delay: 0.7s; }
+    @keyframes tagFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+    /* ═══ TESTIMONIALS ═══ */
+    .testimonials {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      position: relative; z-index: 2;
+    }
+    .testimonial-card {
+      padding: 55px 45px; text-align: center;
+      border: 1px solid rgba(245,240,232,0.03);
+      position: relative; transition: all 0.5s;
+    }
+    .testimonial-card::before {
+      content: ''; position: absolute; inset: -1px;
+      border: 1px solid transparent;
+      transition: border-color 0.5s;
+      pointer-events: none;
+    }
+    .testimonial-card:hover::before { border-color: rgba(201,169,110,0.2); }
+    .testimonial-card:hover { transform: translateY(-6px); }
+    .testimonial-stars {
+      color: #c9a96e; font-size: 13px; letter-spacing: 5px;
+      margin-bottom: 22px; display: inline-block;
+    }
+    .testimonial-text {
+      font-size: 20px; font-style: italic; font-weight: 400;
+      line-height: 1.65; margin-bottom: 22px; color: #f5f0e8;
+    }
+    .testimonial-author {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(245,240,232,0.35);
+    }
+
+    /* ═══ NEWSLETTER ═══ */
+    .newsletter {
+      text-align: center; padding: 120px 20px;
+      border-top: 1px solid rgba(245,240,232,0.04);
+      border-bottom: 1px solid rgba(245,240,232,0.04);
+      position: relative; z-index: 2;
+    }
+    .newsletter h2 { font-size: 36px; margin-bottom: 10px; }
+    .newsletter p { color: rgba(245,240,232,0.45); margin-bottom: 36px; font-size: 14px; }
+    .newsletter-form {
+      display: flex; max-width: 440px; margin: 0 auto;
+      position: relative;
+    }
+    .newsletter-form input {
+      flex: 1; padding: 16px 20px; background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(245,240,232,0.08); border-right: none;
+      color: #f5f0e8; font-size: 13px; outline: none;
+      transition: border-color 0.3s;
+    }
+    .newsletter-form input:focus {
+      border-color: rgba(201,169,110,0.3);
+    }
+    .newsletter-form input::placeholder { color: rgba(245,240,232,0.25); }
+    .newsletter-form button {
+      padding: 16px 32px; background: #c9a96e; border: none;
+      color: #0a0a0a; font-size: 11px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; cursor: pointer;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .newsletter-form button::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    .newsletter-form button:hover::after { transform: translateX(100%); }
+    .newsletter-form button:hover { background: #d4b47a; }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      padding: 70px 40px 30px;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px;
+      position: relative; z-index: 2;
+    }
+    footer h4 {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 22px; color: #c9a96e;
+    }
+    footer p, footer a { font-size: 13px; color: rgba(245,240,232,0.4); line-height: 2.2; }
+    footer a { position: relative; display: inline-block; }
+    footer a::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+      background: #c9a96e; transition: width 0.3s;
+    }
+    footer a:hover { color: #c9a96e; }
+    footer a:hover::after { width: 100%; }
+    .footer-brand .logo { font-size: 16.5px; margin-bottom: 14px; display: block; }
+    .footer-brand p { max-width: 280px; }
+    .footer-bottom {
+      grid-column: 1 / -1; border-top: 1px solid rgba(245,240,232,0.04);
+      padding-top: 24px; margin-top: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-bottom p { font-size: 12px; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 900px) {
+      .collection-grid, .product-grid, .testimonials { grid-template-columns: repeat(2, 1fr); }
+      .mto-section { grid-template-columns: 1fr; }
+      .mto-image-wrap { height: 320px; }
+      .mto-content { padding: 50px 30px; }
+      footer { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+      body { cursor: auto; }
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .collection-grid, .product-grid, .testimonials, .stats { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr; }
+      .newsletter-form { flex-direction: column; }
+      .newsletter-form input { border-right: 1px solid rgba(245,240,232,0.08); }
+      nav { padding: 18px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- ═══ AMBIENT SPARKLES ═══ -->
+  <div class="sparkle-layer" id="sparkleLayer"></div>
+
+  <!-- ═══ NAV ═══ -->
+  <nav id="navbar">
+    <a href="#" class="logo">Aashirvad <span>Jewels</span></a>
+    <ul class="nav-links">
+      <li><a href="#">Collections</a></li>
+      <li><a href="#">Rings</a></li>
+      <li><a href="#">Necklaces</a></li>
+      <li><a href="#">Earrings</a></li>
+      <li><a href="#">Bespoke</a></li>
+      <li><a href="#">Journal</a></li>
+    </ul>
+    <div class="nav-icons">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div class="bag-wrap">
+        <svg viewBox="0 0 24 24" id="bagIcon"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="bag-count" id="bagCount">3</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Est. 2024 &nbsp;·&nbsp; India &nbsp;·&nbsp; Global</div>
+      <h1>
+        <span class="line"><span>Where Craft Meets</span></span>
+        <span class="line"><span><em>Eternity</em></span></span>
+      </h1>
+      <p>250+ handcrafted fine jewellery pieces, made to order for the discerning. Global payments &amp; worldwide delivery.</p>
+      <a href="#" class="btn btn-primary hero-btn">Explore the Collection</a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="mouse"><div class="wheel"></div></div>
+    </div>
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <section class="stats">
+    <div class="stat-card" data-count="250" data-suffix="+">
+      <div class="stat-number"><span class="counter">0</span><span class="plus">+</span></div>
+      <div class="stat-label">Fine Jewellery Pieces</div>
+    </div>
+    <div class="stat-card" data-count="100" data-suffix="%">
+      <div class="stat-number"><span class="counter">0</span><span class="plus">%</span></div>
+      <div class="stat-label">Made to Order</div>
+    </div>
+    <div class="stat-card" data-count="30" data-suffix="+">
+      <div class="stat-number"><span class="counter">0</span><span class="plus">+</span></div>
+      <div class="stat-label">Countries Served</div>
+    </div>
+  </section>
+
+  <!-- ═══ COLLECTIONS ═══ -->
+  <section>
+    <div class="container">
+      <h2 class="section-title reveal">Our Collections</h2>
+      <p class="section-subtitle reveal">Each piece tells a story crafted in <span>gold &amp; gems</span></p>
+    </div>
+    <div class="collection-grid stagger">
+      <div class="collection-item">
+        <div class="img-wrap">
+          <img src="awd2.png" alt="Bridal Collection" loading="lazy">
+          <div class="shine"></div>
+        </div>
+        <div class="overlay"><h3>Bridal</h3><p>48 handcrafted pieces</p></div>
+      </div>
+      <div class="collection-item">
+        <div class="img-wrap">
+          <img src="awd3.png" alt="Diamond Collection" loading="lazy">
+          <div class="shine"></div>
+        </div>
+        <div class="overlay"><h3>Diamonds</h3><p>72 exclusive designs</p></div>
+      </div>
+      <div class="collection-item">
+        <div class="img-wrap">
+          <img src="awd4.png" alt="Gold Collection" loading="lazy">
+          <div class="shine"></div>
+        </div>
+        <div class="overlay"><h3>Heritage Gold</h3><p>56 timeless heirlooms</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURED ═══ -->
+  <section>
+    <div class="container">
+      <div class="featured-header reveal">
+        <div>
+          <h2 class="section-title">Bestsellers</h2>
+          <p>Most admired pieces this season</p>
+        </div>
+        <a href="#" class="btn">View All</a>
+      </div>
+      <div class="product-grid stagger">
+        <div class="product-card">
+          <div class="img-wrap">
+            <img src="awd5.png" alt="The Aria Necklace" loading="lazy">
+            <div class="quick-view">Quick View</div>
+          </div>
+          <div class="product-info">
+            <div class="product-category">Necklace</div>
+            <h3 class="product-title">The Aria Necklace</h3>
+            <div class="product-price">₹ 2,85,000</div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="img-wrap">
+            <img src="awd6.png" alt="Seraphina Earrings" loading="lazy">
+            <div class="quick-view">Quick View</div>
+          </div>
+          <div class="product-info">
+            <div class="product-category">Earrings</div>
+            <h3 class="product-title">Seraphina Earrings</h3>
+            <div class="product-price">₹ 1,92,000</div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="img-wrap">
+            <img src="awd1.png" alt="Eternal Band Ring" loading="lazy">
+            <div class="quick-view">Quick View</div>
+          </div>
+          <div class="product-info">
+            <div class="product-category">Ring</div>
+            <h3 class="product-title">Eternal Band Ring</h3>
+            <div class="product-price">₹ 96,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MADE TO ORDER ═══ -->
+  <section class="mto-section">
+    <div class="mto-image-wrap reveal-left">
+      <div class="mto-bg" id="mtoBg"></div>
+    </div>
+    <div class="mto-content" id="mtoContent">
+      <h2>
+        <span class="line"><span>Made to Order.</span></span>
+        <span class="line"><span>Yours Alone.</span></span>
+      </h2>
+      <p>Every piece at Aashirvad Jewels is crafted on demand — never mass-produced. Share your vision with our master artisans, and we will bring it to life in precious metals and gemstones of your choosing. From initial consultation to final polish, your piece is made for you and only you.</p>
+      <div class="mto-tags">
+        <span class="mto-tag">24K Gold</span>
+        <span class="mto-tag">Certified Diamonds</span>
+        <span class="mto-tag">Global Shipping</span>
+        <span class="mto-tag">Lifetime Polish</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONIALS ═══ -->
+  <section>
+    <div class="container">
+      <h2 class="section-title reveal">Kind Words</h2>
+      <p class="section-subtitle reveal">From our patrons <span>around the world</span></p>
+    </div>
+    <div class="testimonials stagger">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The craftsmanship is extraordinary. My bespoke necklace arrived in Dubai within a week — it fit perfectly and exceeded every expectation."</p>
+        <div class="testimonial-author">— Meera A., Dubai</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I've never experienced this level of personalisation. The artisans understood exactly what I wanted and the result is breathtaking."</p>
+        <div class="testimonial-author">— Priya K., London</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Aashirvad Jewels made our wedding jewellery. Every piece was a work of art — heirloom quality that I will treasure forever."</p>
+        <div class="testimonial-author">— Ananya S., Singapore</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NEWSLETTER ═══ -->
+  <section class="newsletter reveal">
+    <h2>The Aashirvad Gazette</h2>
+    <p>Be the first to know about new collections, artisan stories, and exclusive previews.</p>
+    <form class="newsletter-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thank you!'; setTimeout(()=>this.querySelector('button').textContent='Subscribe',2500)">
+      <input type="email" placeholder="Enter your email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="footer-brand">
+      <span class="logo">Aashirvad <span>Jewels</span></span>
+      <p>250+ fine jewellery pieces, each made to order with love and precision. Global payments accepted. Delhi · India · London.</p>
+    </div>
+    <div>
+      <h4>Collections</h4>
+      <a href="#">Bridal</a><br>
+      <a href="#">Diamonds</a><br>
+      <a href="#">Gold</a><br>
+      <a href="#">Bespoke</a>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <a href="#">Contact Us</a><br>
+      <a href="#">Shipping</a><br>
+      <a href="#">Returns</a><br>
+      <a href="#">Care Guide</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="#">Our Story</a><br>
+      <a href="#">Artisans</a><br>
+      <a href="#">Journal</a><br>
+      <a href="#">Careers</a>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Aashirvad Jewels. All rights reserved.</p>
+      <p>Made to order · Global payments · Heirloom quality</p>
+    </div>
+  </footer>
+
+  <script>
+    // ═══ CUSTOM CURSOR ═══
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot && ring) {
+      let mx = 0, my = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top = my + 'px';
+        ring.style.left = mx + 'px';
+        ring.style.top = my + 'px';
+      });
+      document.querySelectorAll('a, button, .collection-item, .product-card, .btn').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+      });
+    }
+
+    // ═══ SCROLL PROGRESS ═══
+    const progressBar = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    // ═══ NAVBAR SHRINK ═══
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('shrink', window.scrollY > 80);
+    });
+
+    // ═══ HERO PARALLAX ═══
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      const speed = 0.3;
+      heroBg.style.transform = `translateY(${window.scrollY * speed}px) scale(1.1)`;
+    });
+
+    // ═══ MOUSE PARALLAX ON HERO ═══
+    document.getElementById('hero')?.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 10;
+      const y = (e.clientY / window.innerHeight - 0.5) * 10;
+      heroBg.style.transform = `translate(${x}px, ${y}px) scale(1.08)`;
+    });
+
+    // ═══ STAT CARD GLOW FOLLOW ═══
+    document.querySelectorAll('.stat-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
+        card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+      });
+    });
+
+    // ═══ COUNTER ANIMATION ═══
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const card = entry.target;
+          const target = parseInt(card.dataset.count);
+          const suffix = card.dataset.suffix || '';
+          const span = card.querySelector('.counter');
+          let current = 0;
+          const duration = 1500;
+          const step = Math.ceil(target / (duration / 16));
+          const timer = setInterval(() => {
+            current += step;
+            if (current >= target) { current = target; clearInterval(timer); }
+            span.textContent = current;
+          }, 16);
+          counterObserver.unobserve(card);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stat-card').forEach(card => counterObserver.observe(card));
+
+    // ═══ STAGGER REVEAL ═══
+    const staggerObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          staggerObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.stagger').forEach(el => staggerObserver.observe(el));
+
+    // ═══ REVEAL OBSERVER ═══
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')
+      .forEach(el => revealObserver.observe(el));
+
+    // ═══ MTO CONTENT REVEAL ═══
+    const mtoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          mtoObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    const mtoContent = document.getElementById('mtoContent');
+    if (mtoContent) mtoObserver.observe(mtoContent);
+
+    // ═══ SPARKLE BACKGROUND ═══
+    const layer = document.getElementById('sparkleLayer');
+    for (let i = 0; i < 25; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.width = s.style.height = (2 + Math.random() * 3) + 'px';
+      s.style.animationDelay = (Math.random() * 10) + 's';
+      s.style.animationDuration = (6 + Math.random() * 8) + 's';
+      layer.appendChild(s);
+    }
+
+    // ═══ BAG ICON BUMP ═══
+    const bagIcon = document.getElementById('bagIcon');
+    const bagCount = document.getElementById('bagCount');
+    if (bagCount) { bagCount.classList.add('show'); }
+    setInterval(() => {
+      if (bagCount) bagCount.classList.add('bump');
+      setTimeout(() => { if (bagCount) bagCount.classList.remove('bump'); }, 400);
+    }, 5000);
+
+    // ═══ COLLECTION ITEM 3D TILT ═══
+    document.querySelectorAll('.collection-item').forEach(item => {
+      item.addEventListener('mousemove', e => {
+        const rect = item.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const wrap = item.querySelector('.img-wrap');
+        if (wrap) wrap.style.transform = `rotateX(${y * -8}deg) rotateY(${x * 8}deg) scale(1.03)`;
+      });
+      item.addEventListener('mouseleave', () => {
+        const wrap = item.querySelector('.img-wrap');
+        if (wrap) wrap.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+      });
+    });
+
+    // ═══ PRODUCT CARD 3D TILT ═══
+    document.querySelectorAll('.product-card').forEach(card => {
+      const wrap = card.querySelector('.img-wrap');
+      if (!wrap) return;
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        wrap.style.transform = `rotateX(${y * -6}deg) rotateY(${x * 6}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        wrap.style.transform = 'rotateX(0) rotateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>
